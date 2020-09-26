@@ -1,0 +1,18 @@
+---
+title: "Homework 2"
+output: github_document
+---
+```{r setup}
+library(tidyverse)
+library(readxl)
+```
+
+## Problem 1
+
+Read and clean the Mr. Trash Wheel sheet. 
+
+```{r}
+trash_df = read_excel("./data/trash_wheel_collection.xlsx")
+trash_df = janitor::clean_names(trash_df)
+```
+
