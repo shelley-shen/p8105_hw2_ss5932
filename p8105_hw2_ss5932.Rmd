@@ -7,7 +7,7 @@ library(tidyverse)
 library(readxl)
 ```
 
-## Problem 1
+## Problem 1: Mr. Trash Wheel
 
 Read and clean the Mr. Trash Wheel sheet. 
 
@@ -77,9 +77,9 @@ The median number of sports balls in a dumpster in 2017 was `r median(pull(filte
 
 
 
-## Problem 2
+## Problem 2: NYC Transit
 
-Read and clean the NYC Transit data. 
+*Part 1: Read and clean the NYC Transit data.*
 
 ```{r}
 nyc_transit_df = 
@@ -87,7 +87,14 @@ nyc_transit_df =
   janitor::clean_names() %>% 
   select(line:entry, vending, ada) %>%
   mutate(entry = recode(entry, "YES" = "TRUE", "NO" = "FALSE"))
-  
+
+view(nyc_transit_df)
 ```
+
+The NYC Transit dataset contains a variety of variables pertaining to the NYC transit system. After reading in the csv file, I cleaned the data by first using the clean_names function from the janitor package to make all variable names in the same format with lowercase letters and snake case. Then, I used the select command to retain only the variables of interest and omit all other extraneous variables. The following variables are those of interest: line, station, name, station latitude and longitude, routes served, entry, entrance type, vending, and ADA compliance. Finally, I converted the "entry" variable from the original character vector into a logical vector by using the recode function embedded in the mutate function. The resulting dataset contains `r nrow(nyc_transit_df)` rows and `r ncol(nyc_transit_df)` columns. The data is relatively tidy since each variable and entry has its own column and row, respectively. 
+
+
+*Part 2: Details about the data.*
+
 
 
