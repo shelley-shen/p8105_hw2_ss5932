@@ -28,7 +28,7 @@ Read and clean precipitation data for 2018 and 2017.
 
 ```{r}
 precip_2018 = 
-  read_excel(
+  read_xlsx(
     "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
     sheet = "2018 Precipitation", 
     skip = 1, 
@@ -40,7 +40,7 @@ precip_2018 =
   relocate(year)
 
 precip_2017 = 
-  read_excel(
+  read_xlsx(
     "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
     sheet = "2017 Precipitation", 
     skip = 1, 
@@ -72,12 +72,22 @@ This dataset contains information from the Mr. Trash Wheel trash collector in Ba
 
 The total precipitation in 2018 was `r sum(pull(precip_2018, total))`inches. 
 
-The median number of sports balls in a dumpster in 2017 was 
+The median number of sports balls in a dumpster in 2017 was `r median(pull(filter(trashwheel_df, year == 2017), sports_balls))` balls.
 
 
 
 
 ## Problem 2
 
+Read and clean the NYC Transit data. 
+
+```{r}
+nyc_transit_df = 
+  read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names() %>% 
+  select(line:entry, vending, ada) %>%
+  mutate(entry = recode(entry, "YES" = "TRUE", "NO" = "FALSE"))
+  
+```
 
 
