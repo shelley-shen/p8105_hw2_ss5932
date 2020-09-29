@@ -1,10 +1,14 @@
 ---
 title: "Homework 2"
+author: Shelley Shen
+date: 09/26/2020
 output: github_document
 ---
 ```{r setup}
 library(tidyverse)
 library(readxl)
+library(dplyr)
+library(readr)
 ```
 
 ## Problem 1: Mr. Trash Wheel
@@ -86,15 +90,45 @@ nyc_transit_df =
   read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
   janitor::clean_names() %>% 
   select(line:entry, vending, ada) %>%
-  mutate(entry = recode(entry, "YES" = "TRUE", "NO" = "FALSE"))
+  mutate(entry = recode(entry, "YES" = "TRUE", "NO" = "FALSE")) 
 
-view(nyc_transit_df)
+nyc_transit_tidy = 
+  nyc_transit_df %>% 
+    mutate(
+      route8 = as.character(route8), 
+      route9 = as.character(route9),
+      route10 = as.character(route10), 
+      route11 = as.character(route11))
+
+nyc_transit_tidy = 
+  pivot_longer(
+    nyc_transit_tidy, 
+    route1:route11, 
+    names_to = "route_order", 
+    names_prefix = "route",
+    values_to = "route")
+
+
+view(nyc_transit_tidy)
 ```
 
-The NYC Transit dataset contains a variety of variables pertaining to the NYC transit system. After reading in the csv file, I cleaned the data by first using the clean_names function from the janitor package to make all variable names in the same format with lowercase letters and snake case. Then, I used the select command to retain only the variables of interest and omit all other extraneous variables. The following variables are those of interest: line, station, name, station latitude and longitude, routes served, entry, entrance type, vending, and ADA compliance. Finally, I converted the "entry" variable from the original character vector into a logical vector by using the recode function embedded in the mutate function. The resulting dataset contains `r nrow(nyc_transit_df)` rows and `r ncol(nyc_transit_df)` columns. The data is relatively tidy since each variable and entry has its own column and row, respectively. 
+The NYC Transit dataset contains a variety of variables pertaining to the NYC transit system. After reading in the csv file, I cleaned the data by first cleaning the names to make all variable names in the same format with lowercase letters and snake case. Then, I used the select command to retain only the variables of interest and omit all other extraneous variables. The following variables are those of interest: line, station, name, station latitude and longitude, routes served, entry, entrance type, vending, and ADA compliance. Next, I converted the "entry" variable from the original character vector into a logical vector by using the recode function embedded in the mutate function. In an effort to make the data more tidy, I all the route variables into character vectors so they can be merged via pivot_longer and all routes are just under two columns. 
+
+The resulting dataset contains a total of `r nrow(nyc_transit_tidy)` observations with `r nrow(nyc_transit_tidy)` rows and `r ncol(nyc_transit_tidy)` columns. The variables in the dataset are `r names(nyc_transit_tidy)`.  The data is quite tidy now. 
 
 
 *Part 2: Details about the data.*
 
+Find the number of distant stations, the number of ADA compliant stations, and the proportion of station entrances and exits without vending that allow entrance. 
+
+```{r}
+distinct(nyc_transit_tidy, station_name)
 
 
+
+```
+
+
+
+
+## Question 3: 
