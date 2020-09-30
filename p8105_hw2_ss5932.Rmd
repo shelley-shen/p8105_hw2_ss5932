@@ -74,9 +74,9 @@ left_join(precip_df, month_df, by = "month")
 
 This dataset contains information from the Mr. Trash Wheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trash wheel collects that trash and stores it in a dumpster. The dataset contains information on year, month, and trash collected, including some specific kinds of trash. There are a total of `r ncol(trashwheel_df)` columns and `r nrow(trashwheel_df)` rows in our final dataset. Additional data sheets include month and precipitation data for each year between 2014-2019. 
 
-The total precipitation in 2018 was `r sum(pull(precip_2018, total))`inches. 
+- The total precipitation in 2018 was `r sum(pull(precip_2018, total))`inches. 
 
-The median number of sports balls in a dumpster in 2017 was `r median(pull(filter(trashwheel_df, year == 2017), sports_balls))` balls.
+- The median number of sports balls in a dumpster in 2017 was `r median(pull(filter(trashwheel_df, year == 2017), sports_balls))` balls.
 
 
 
@@ -91,7 +91,11 @@ nyc_transit_df =
   janitor::clean_names() %>% 
   select(line:entry, vending, ada) %>%
   mutate(entry = recode(entry, "YES" = "TRUE", "NO" = "FALSE")) 
+```
 
+The data is not tidy yet as each route is a distinct variable and needs to be further cleaned by converting the route variables into the same type of vector and then using pivot_longer to merge the routes into one variable. 
+
+```{r}
 nyc_transit_tidy = 
   nyc_transit_df %>% 
     mutate(
@@ -104,15 +108,14 @@ nyc_transit_tidy =
   pivot_longer(
     nyc_transit_tidy, 
     route1:route11, 
-    names_to = "route_order", 
+    names_to = "route_number", 
     names_prefix = "route",
     values_to = "route")
-
 
 view(nyc_transit_tidy)
 ```
 
-The NYC Transit dataset contains a variety of variables pertaining to the NYC transit system. After reading in the csv file, I cleaned the data by first cleaning the names to make all variable names in the same format with lowercase letters and snake case. Then, I used the select command to retain only the variables of interest and omit all other extraneous variables. The following variables are those of interest: line, station, name, station latitude and longitude, routes served, entry, entrance type, vending, and ADA compliance. Next, I converted the "entry" variable from the original character vector into a logical vector by using the recode function embedded in the mutate function. In an effort to make the data more tidy, I all the route variables into character vectors so they can be merged via pivot_longer and all routes are just under two columns. 
+The NYC Transit dataset contains a variety of variables pertaining to the NYC transit system. After reading in the csv file, I cleaned the data by first cleaning the names to make all variable names in the same format with lowercase letters and snake case. Then, I used the select command to retain only the variables of interest and omit all other extraneous variables. The following variables are those of interest: line, station, name, station latitude and longitude, routes served, entry, entrance type, vending, and ADA compliance. Next, I converted the "entry" variable from the original character vector into a logical vector by using the recode function embedded in the mutate function. In an effort to make the data more tidy, I converted all the route variables into character vectors so they can be merged via pivot_longer and all the routes are under only two columns. 
 
 The resulting dataset contains a total of `r nrow(nyc_transit_tidy)` observations with `r nrow(nyc_transit_tidy)` rows and `r ncol(nyc_transit_tidy)` columns. The variables in the dataset are `r names(nyc_transit_tidy)`.  The data is quite tidy now. 
 
@@ -121,12 +124,18 @@ The resulting dataset contains a total of `r nrow(nyc_transit_tidy)` observation
 
 Find the number of distant stations, the number of ADA compliant stations, and the proportion of station entrances and exits without vending that allow entrance. 
 
-```{r}
-distinct(nyc_transit_tidy, station_name)
+- There are `r distinct(nyc_transit_tidy, line, station_name) %>% count()` number of distinct stations in the NYC transit system. 
+
+- There are `r filter(nyc_transit_tidy, ada == "TRUE") %>% distinct(line, station_name) %>% count()` stations that are ADA compliant. 
+
+- The proportion of station entrances/exits without vending that allow entrance is `r filter(nyc_transit_tidy, vending == "NO") %>% count()/filter(nyc_transit_tidy, entry == "TRUE") %>% count()`. 
+
+- The number of distinct stations that serve the A train is `r filter(nyc_transit_tidy, route == "A") %>% distinct(line, station_name) %>% count()`. 
+
+- The number of distinct stations that serve the A train and are ADA compliant is `r filter(nyc_transit_tidy, route == "A") %>% filter(ada == "TRUE") %>% distinct(line, station_name) %>% count()`. 
 
 
 
-```
 
 
 
