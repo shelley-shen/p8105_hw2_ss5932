@@ -15,7 +15,7 @@ library(readr)
 
 Read and clean the Mr. Trash Wheel sheet. 
 
-```{r}
+```{r Mr_Trash_Wheel}
 trashwheel_df = 
   read_xlsx("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
     sheet = "Mr. Trash Wheel",   
@@ -85,7 +85,7 @@ This dataset contains information from the Mr. Trash Wheel trash collector in Ba
 
 *Part 1: Read and clean the NYC Transit data.*
 
-```{r}
+```{r NYC_Transit}
 nyc_transit_df = 
   read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
   janitor::clean_names() %>% 
@@ -108,9 +108,9 @@ nyc_transit_tidy =
   pivot_longer(
     nyc_transit_tidy, 
     route1:route11, 
-    names_to = "route_number", 
+    names_to = "route_name", 
     names_prefix = "route",
-    values_to = "route")
+    values_to = "route_number")
 
 view(nyc_transit_tidy)
 ```
@@ -126,18 +126,32 @@ Find the number of distant stations, the number of ADA compliant stations, and t
 
 - There are `r distinct(nyc_transit_tidy, line, station_name) %>% count()` number of distinct stations in the NYC transit system. 
 
-- There are `r filter(nyc_transit_tidy, ada == "TRUE") %>% distinct(line, station_name) %>% count()` stations that are ADA compliant. 
+- There are `r filter(nyc_transit_tidy, ada == "TRUE") %>% distinct(line, station_name) %>% count()` distinct stations that are ADA compliant. 
 
-- The proportion of station entrances/exits without vending that allow entrance is `r filter(nyc_transit_tidy, vending == "NO") %>% count()/filter(nyc_transit_tidy, entry == "TRUE") %>% count()`. 
+- The proportion of station entrances/exits without vending that allow entrance is `r filter(nyc_transit_tidy, entry == "TRUE", vending == "NO") %>% count()/filter(nyc_transit_tidy, vending == "NO") %>% count()`. 
 
-- The number of distinct stations that serve the A train is `r filter(nyc_transit_tidy, route == "A") %>% distinct(line, station_name) %>% count()`. 
+- There are `r filter(nyc_transit_tidy, route_number == "A") %>% distinct(line, station_name) %>% count()` distinct stations that serve the A train. 
 
-- The number of distinct stations that serve the A train and are ADA compliant is `r filter(nyc_transit_tidy, route == "A") %>% filter(ada == "TRUE") %>% distinct(line, station_name) %>% count()`. 
-
-
+- There are `r filter(nyc_transit_tidy, route_number == "A") %>% filter(ada == "TRUE") %>% distinct(line, station_name) %>% count()` distinct stations that serve the A train and are ADA compliant. 
 
 
 
+## Problem 3: FiveThirtyEight
+
+**Part 1**
+Read and clean data in pols-month csv file. I will first separate the date variable into year, month, and day and then remove the day variable. Then I will create a president variable and remove the variables used to create it. 
+
+```{r 538}
+pols_df = 
+  read_csv("./data/538_data/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, c("year", "month", "day")) %>% 
+  mutate(month = month.abb[as.factor(month)]) %>% 
+  subset(select = -c(day))
+```
+  
 
 
-## Question 3: 
+
+
+
