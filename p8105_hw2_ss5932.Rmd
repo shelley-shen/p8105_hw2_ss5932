@@ -13,7 +13,7 @@ library(readr)
 
 ## Problem 1: Mr. Trash Wheel
 
-Read and clean the Mr. Trash Wheel sheet. 
+Read and clean the Mr. Trash Wheel sheet. I will import the data from the Mr. Trash Wheel Excel sheet, format variable names with snake case, remove non-data values, including the rows and columns with annotations and values that do not pertain to the dumpster data. 
 
 ```{r Mr_Trash_Wheel}
 trashwheel_df = 
@@ -28,7 +28,7 @@ trashwheel_df =
   )
 ```
 
-Read and clean precipitation data for 2018 and 2017.
+Read and clean precipitation data for 2018 and 2017. I will import the data from the Excel sheets associated with the years of interest, remove rows without data, and create a new variable for year. 
 
 ```{r}
 precip_2018 = 
@@ -56,7 +56,7 @@ precip_2017 =
 ```
 
 
-Now combine annual precipitation and change month number to name by creating separate month tibble.  
+Now combine annual precipitation and change month number to name by creating a separate month tibble and then merging with left_join.  
 
 ```{r}
 month_df = 
