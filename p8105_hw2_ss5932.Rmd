@@ -139,7 +139,8 @@ Find the number of distant stations, the number of ADA compliant stations, and t
 ## Problem 3: FiveThirtyEight
 
 **Part 1: pols data**
-Read and clean data in pols-month csv file. I will first separate the date variable into year, month, and day and then remove the day variable. Then I will create a president variable and remove the variables used to create it. 
+
+Read and clean data in pols-month csv file. I will first separate the date variable into year, month, and day and then remove the day variable. Then I will create a president variable and remove the variables used to create it. I will also convert year and month into factor variables to ensure that it can merge with the other datasets later.
 
 ```{r pols}
 pols_df = 
@@ -147,7 +148,7 @@ pols_df =
   janitor::clean_names() %>% 
   separate(mon, c("year", "month", "day")) %>% 
   mutate(
-    month = month.abb[as.factor(month)],
+    month = as.factor(month.abb[as.factor(month)]),
     year = as.factor(year),
     president = case_when( 
      prez_gop == 1 ~ "gop",
@@ -156,9 +157,10 @@ pols_df =
     )) %>% 
   subset(select = -c(day, prez_gop, prez_dem))
 ```
-  
+
 **Part 2: snp data**
-Read and clean data in snp csv file using the same process as above. I will first separate the date variable into separate year, month, and day columns, then remove the day variable. 
+
+Read and clean data in snp csv file using the same process as above. I will first separate the date variable into separate year, month, and day columns, then remove the day variable. I will also convert year and month into factor variables to ensure that it can merge with the other datasets later. 
 
 ```{r snp}
 snp_df = 
@@ -166,12 +168,47 @@ snp_df =
   janitor::clean_names() %>% 
   separate(date, c("month", "day", "year")) %>%
   mutate(
-    month = month.abb[as.factor(month)],
-    year = as.factor(year)) %>% 
-  subset(select = -c(day)) %>% 
-  relocate(year, month)
+    month = as.factor(month.abb[as.factor(month)]),
+    year = as.factor(year),
+    close = as.factor(close)) %>% 
+    relocate(year, month) %>% 
+  subset(select = -c(day))
 ```
 
 **Part 3: unemployment data**
 
+Read and clean data in unemployment csv file using similar process as above and using pivot_longer to merge the month variables into one columnn and their respective values into a separate percentage unemployed column. I will also convert year and month into factor variables to ensure that it can merge with the other datasets later. 
 
+```{r unemploy}
+unemploy_df = 
+  read_csv("./data/538_data/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(Jan = jan, Feb = feb, Mar = mar, Apr = apr, May = may, Jun = jun, Jul = jul, Aug = aug, Sep = sep, Oct = oct, Nov = nov, Dec = dec) %>% 
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "percent_unemployed") %>% 
+  mutate(
+    year = as.factor(year),
+    month = as.factor(month),
+    percent_unemployed = as.factor(percent_unemployed))
+ 
+```
+
+**Part 4: merge all datasets**
+
+```{r final merges}
+pols_snp = 
+  left_join(
+    pols_df, snp_df, by = c("year", "month"))
+
+
+pols_snp_unemploy = 
+  left_join(
+    pols_snp, unemploy_df, by = c("year", "month"))
+
+View(pols_snp_unemploy)
+```
+
+
+NA values in the variable close arise 
